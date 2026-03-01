@@ -49,6 +49,11 @@
       "expo-sharing",
       "expo-local-authentication",
       "@react-native-google-signin/google-signin"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "99b099d6-29c9-4fdf-aeb8-933b214c487c"
+      }
+    }
   }
 }
