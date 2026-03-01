@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Alert, Switch, Modal } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Alert, Switch, Modal, Linking } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as LocalAuthentication from 'expo-local-authentication';
@@ -12,11 +12,17 @@ export const SettingsScreen = ({ navigation }: any) => {
     const [currencyModalVisible, setCurrencyModalVisible] = useState(false);
 
     const currencies = [
-        { symbol: '$', name: 'US Dollar (USD)' },
+        { symbol: '$', name: 'US Dollar (USD, CAD, AUD)' },
         { symbol: '€', name: 'Euro (EUR)' },
         { symbol: '£', name: 'British Pound (GBP)' },
-        { symbol: '¥', name: 'Japanese Yen (JPY)' },
-        { symbol: '₹', name: 'Indian Rupee (INR)' }
+        { symbol: '¥', name: 'Yen/Yuan (JPY, CNY)' },
+        { symbol: '₹', name: 'Indian Rupee (INR)' },
+        { symbol: 'CHF', name: 'Swiss Franc (CHF)' },
+        { symbol: '₽', name: 'Russian Ruble (RUB)' },
+        { symbol: '₺', name: 'Turkish Lira (TRY)' },
+        { symbol: 'R$', name: 'Brazilian Real (BRL)' },
+        { symbol: 'R', name: 'South African Rand (ZAR)' },
+        { symbol: 'kr', name: 'Krona/Krone (DKK, NOK, SEK)' }
     ];
 
     useEffect(() => {
@@ -155,7 +161,31 @@ export const SettingsScreen = ({ navigation }: any) => {
                 <View style={[dynamicStyles.card, { borderColor: colors.primary }]}>
                     <TouchableOpacity
                         style={{ ...dynamicStyles.row, borderBottomWidth: 0 }}
-                        onPress={() => Alert.alert('Thank you!', 'Link to Buy Me a Coffee page... (Replace with actual URL)')}
+                        onPress={() => {
+                            Alert.alert(
+                                'Buy me a coffee ☕',
+                                'Choose your preferred payment method:',
+                                [
+                                    {
+                                        text: 'Stripe',
+                                        onPress: () => {
+                                            // TODO: Add Stripe Checkout Link Here
+                                            // Linking.openURL('https://buy.stripe.com/...');
+                                            Alert.alert('Notice', 'Stripe link not yet configured.');
+                                        }
+                                    },
+                                    {
+                                        text: 'Apple Pay',
+                                        onPress: () => {
+                                            // TODO: Add Apple Pay / alternative gateway link here
+                                            // Linking.openURL('https://...');
+                                            Alert.alert('Notice', 'Apple Pay link not yet configured.');
+                                        }
+                                    },
+                                    { text: 'Cancel', style: 'cancel' }
+                                ]
+                            );
+                        }}
                     >
                         <View style={dynamicStyles.rowIconContainer}>
                             <MaterialCommunityIcons name="coffee-outline" size={24} color={colors.primary} style={{ marginRight: 12 }} />
