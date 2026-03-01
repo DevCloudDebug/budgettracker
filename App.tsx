@@ -12,6 +12,7 @@ import { BudgetScreen } from './src/screens/BudgetScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
 import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 import { initializeDB } from './src/store/storage';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +23,7 @@ const AppNav = ({ initialRoute }: { initialRoute: string }) => {
     <>
       <StatusBar style={isDark ? "light" : "dark"} />
       <NavigationContainer>
+        {/* @ts-ignore */}
         <Stack.Navigator
           initialRouteName={initialRoute}
           screenOptions={{
@@ -100,9 +102,11 @@ export default function App() {
   }
 
   return (
-    <ThemeProvider>
-      <AppNav initialRoute={initialRoute} />
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <AppNav initialRoute={initialRoute} />
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }
 

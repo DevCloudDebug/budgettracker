@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, TextInput, SafeAreaView, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, TextInput, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import uuid from 'react-native-uuid';
 import { Budget, Expense, getBudgets, updateBudget, deleteBudget } from '../store/storage';
@@ -172,7 +173,7 @@ export const BudgetScreen = ({ route, navigation }: any) => {
                         <View style={dynamicStyles.statsContainer}>
                             <View style={dynamicStyles.statBox}>
                                 <Text style={dynamicStyles.statLabel}>Income</Text>
-                                <Text style={[dynamicStyles.statValue, { color: colors.chartGreen }]}>${budget.income.toFixed(2)}</Text>
+                                <Text style={[dynamicStyles.statValue, { color: colors.chartIncome }]}>${budget.income.toFixed(2)}</Text>
                             </View>
                             <View style={dynamicStyles.statBox}>
                                 <Text style={dynamicStyles.statLabel}>Expected Expenses</Text>
@@ -180,11 +181,11 @@ export const BudgetScreen = ({ route, navigation }: any) => {
                             </View>
                             <View style={dynamicStyles.statBox}>
                                 <Text style={dynamicStyles.statLabel}>Money Spent</Text>
-                                <Text style={[dynamicStyles.statValue, { color: colors.chartDarkOrange }]}>${paidExpenses.toFixed(2)}</Text>
+                                <Text style={[dynamicStyles.statValue, { color: colors.chartPaid }]}>${paidExpenses.toFixed(2)}</Text>
                             </View>
                             <View style={dynamicStyles.statBox}>
                                 <Text style={dynamicStyles.statLabel}>To Be Paid</Text>
-                                <Text style={[dynamicStyles.statValue, { color: colors.chartLightOrange }]}>${Math.max(0, totalExpenses - paidExpenses).toFixed(2)}</Text>
+                                <Text style={[dynamicStyles.statValue, { color: colors.chartUnpaid }]}>${Math.max(0, totalExpenses - paidExpenses).toFixed(2)}</Text>
                             </View>
                         </View>
                     </View>

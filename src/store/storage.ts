@@ -1,5 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 import * as FileSystem from 'expo-file-system';
+import { Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 import uuid from 'react-native-uuid';
@@ -24,13 +25,21 @@ export interface Budget {
 const DB_NAME = 'budget.db';
 const WEB_STORAGE_KEY = '@web_budgets';
 
+let _dbInstance: SQLite.SQLiteDatabase | null = null;
+
 export const getDb = () => {
     // We handle the case where it might be running on Web (where sqlite doesn't work out of the box).
     if (Platform.OS === 'web') {
         return null;
     }
+
+    if (_dbInstance) {
+        return _dbInstance;
+    }
+
     try {
-        return SQLite.openDatabaseSync(DB_NAME);
+        _dbInstance = SQLite.openDatabaseSync(DB_NAME);
+        return _dbInstance;
     } catch (e) {
         console.warn("SQLite open error:", e);
         return null;
@@ -168,28 +177,25 @@ export const deleteBudget = async (id: string): Promise<void> => {
 export const exportDatabase = async () => {
     if (Platform.OS === 'web') return;
     try {
-        const dbPath = `${FileSystem.documentDirectory}SQLite/${DB_NAME}`;
+        const dbPath = `${Paths.document.uri}SQLite/${DB_NAME}`;
         const exists = await FileSystem.getInfoAsync(dbPath);
 
         if (!exists.exists) return;
 
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const targetPath = `${FileSystem.cacheDirectory}budgetBackup_${timestamp}.db`;
+        const targetPath = `${Paths.cache.uri}budgetBackup_${timestamp}.db`;
 
         await FileSystem.copyAsync({
             from: dbPath,
             to: targetPath
         });
 
-        const allowShare = await Sharing.isAvailableAsync();
-        if (allowShare) {
-            await Sharing.shareAsync(targetPath, {
-                mimeType: 'application/x-sqlite3',
-                dialogTitle: 'Share Budget Backup'
-            });
-        }
+        await Sharing.shareAsync(targetPath, {
+            mimeType: 'application/x-sqlite3',
+            dialogTitle: 'Export Budget Backup'
+        });
     } catch (e) {
-        console.error(e);
+        console.error("Export error:", e);
     }
 };
 
@@ -203,7 +209,7 @@ export const importDatabase = async (): Promise<boolean> => {
 
         if (!result.canceled && result.assets && result.assets.length > 0) {
             const fileUri = result.assets[0].uri;
-            const dbPath = `${FileSystem.documentDirectory}SQLite/${DB_NAME}`;
+            const dbPath = `${Paths.document.uri}SQLite/${DB_NAME}`;
 
             await FileSystem.copyAsync({
                 from: fileUri,

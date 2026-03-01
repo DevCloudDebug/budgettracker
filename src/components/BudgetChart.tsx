@@ -65,29 +65,8 @@ export const BudgetChart: React.FC<BudgetChartProps> = ({ income, totalExpenses,
     }
 
     const isOverBudget = totalExpenses > income && income > 0;
-
-    if (isOverBudget) {
-        return (
-            <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
-                <Svg width={size} height={size}>
-                    <Circle
-                        cx={size / 2}
-                        cy={size / 2}
-                        r={radius}
-                        stroke={colors.danger}
-                        strokeWidth={strokeWidth}
-                        fill="none"
-                    />
-                </Svg>
-                <View style={dynamicStyles.centerTextContainer}>
-                    <Text style={dynamicStyles.centerTextRed}>Over</Text>
-                    <Text style={dynamicStyles.centerTextRed}>Budget</Text>
-                </View>
-            </View>
-        );
-    }
-
     const total = Math.max(income, totalExpenses);
+
     const remainingIncome = Math.max(0, income - totalExpenses);
     const unpaidExpenses = Math.max(0, totalExpenses - paidExpenses);
 
@@ -116,7 +95,7 @@ export const BudgetChart: React.FC<BudgetChartProps> = ({ income, totalExpenses,
                         cx={size / 2}
                         cy={size / 2}
                         r={radius}
-                        stroke={colors.chartGreen}
+                        stroke={colors.chartIncome}
                         strokeWidth={strokeWidth}
                         fill="none"
                         strokeDasharray={`${greenLength} ${circumference}`}
@@ -129,7 +108,7 @@ export const BudgetChart: React.FC<BudgetChartProps> = ({ income, totalExpenses,
                         cx={size / 2}
                         cy={size / 2}
                         r={radius}
-                        stroke={colors.chartLightOrange}
+                        stroke={colors.chartUnpaid}
                         strokeWidth={strokeWidth}
                         fill="none"
                         strokeDasharray={`${lightOrangeLength} ${circumference}`}
@@ -142,7 +121,7 @@ export const BudgetChart: React.FC<BudgetChartProps> = ({ income, totalExpenses,
                         cx={size / 2}
                         cy={size / 2}
                         r={radius}
-                        stroke={colors.chartDarkOrange}
+                        stroke={colors.chartPaid}
                         strokeWidth={strokeWidth}
                         fill="none"
                         strokeDasharray={`${darkOrangeLength} ${circumference}`}
@@ -151,10 +130,19 @@ export const BudgetChart: React.FC<BudgetChartProps> = ({ income, totalExpenses,
                 )}
             </Svg>
             <View style={dynamicStyles.centerTextContainer}>
-                <Text style={dynamicStyles.centerPercent}>
-                    {Math.round(greenRatio * 100)}%
-                </Text>
-                <Text style={dynamicStyles.centerSubText}>Left</Text>
+                {isOverBudget ? (
+                    <>
+                        <Text style={dynamicStyles.centerTextRed}>Over</Text>
+                        <Text style={dynamicStyles.centerTextRed}>Budget</Text>
+                    </>
+                ) : (
+                    <>
+                        <Text style={dynamicStyles.centerPercent}>
+                            {Math.round(greenRatio * 100)}%
+                        </Text>
+                        <Text style={dynamicStyles.centerSubText}>Left</Text>
+                    </>
+                )}
             </View>
         </View>
     );

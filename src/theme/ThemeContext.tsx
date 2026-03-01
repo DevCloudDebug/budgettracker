@@ -25,9 +25,9 @@ export const lightColors = {
     border: '#E5E7EB', // Soft boundaries
 
     // Chart specifics mapped for psychology
-    chartGreen: '#059669', // Leftover/Income 
-    chartLightOrange: '#F59E0B', // Unpaid (Warning)
-    chartDarkOrange: '#0052FF', // Paid/Spent (Reliable action)
+    chartIncome: '#059669', // Leftover/Income 
+    chartUnpaid: '#F59E0B', // Unpaid (Warning)
+    chartPaid: '#0052FF', // Paid/Spent (Reliable action)
 };
 
 export const darkColors = {
@@ -51,9 +51,9 @@ export const darkColors = {
 
     border: '#30363D', // Subtle structural lines
 
-    chartGreen: '#10B981',
-    chartLightOrange: '#FBBF24',
-    chartDarkOrange: '#3B82F6',
+    chartIncome: '#10B981',
+    chartUnpaid: '#FBBF24',
+    chartPaid: '#3B82F6',
 };
 
 export type ThemeColors = typeof lightColors;

@@ -26,7 +26,7 @@ export const colors = {
   border: '#1e293b', // Tailwind slate-800
 
   // Chart Colors (Pie Chart Segments)
-  chartGreen: '#10b981', // emerald-500
-  chartLightOrange: '#f472b6', // pink-400 (Replacing orange for aesthetic fit)
-  chartDarkOrange: '#8b5cf6', // violet-500 (Replacing orange for aesthetic fit)
+  chartIncome: '#10b981',     // emerald-500 (Remaining Income)
+  chartUnpaid: '#f59e0b',     // amber-500   (Expenses To Pay)
+  chartPaid: '#3b82f6',       // blue-500    (Expenses Paid)
 };
