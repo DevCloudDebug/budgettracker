@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Alert, Switch } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Alert, Switch, Modal } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as LocalAuthentication from 'expo-local-authentication';
@@ -7,8 +7,17 @@ import { useTheme } from '../theme/ThemeContext';
 import { exportDatabase, importDatabase } from '../store/storage';
 
 export const SettingsScreen = ({ navigation }: any) => {
-    const { colors, isDark, toggleTheme } = useTheme();
+    const { colors, isDark, toggleTheme, currency, setCurrency } = useTheme();
     const [authEnabled, setAuthEnabled] = useState(false);
+    const [currencyModalVisible, setCurrencyModalVisible] = useState(false);
+
+    const currencies = [
+        { symbol: '$', name: 'US Dollar (USD)' },
+        { symbol: '€', name: 'Euro (EUR)' },
+        { symbol: '£', name: 'British Pound (GBP)' },
+        { symbol: '¥', name: 'Japanese Yen (JPY)' },
+        { symbol: '₹', name: 'Indian Rupee (INR)' }
+    ];
 
     useEffect(() => {
         const loadSettings = async () => {
@@ -58,6 +67,20 @@ export const SettingsScreen = ({ navigation }: any) => {
         },
         rowLabel: { color: colors.text, fontSize: 16, fontWeight: '600' },
         rowIconContainer: { flexDirection: 'row', alignItems: 'center' },
+        modalOverlay: { flex: 1, backgroundColor: isDark ? 'rgba(0,0,0,0.85)' : 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
+        modalContent: {
+            backgroundColor: colors.card, borderTopLeftRadius: 32, borderTopRightRadius: 32,
+            padding: 24, paddingBottom: 48,
+        },
+        modalTitle: { color: colors.text, fontSize: 24, fontWeight: '800', marginBottom: 20, letterSpacing: -0.5 },
+        currencyOption: {
+            flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+            paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: colors.border
+        },
+        currencySymbolText: { color: colors.text, fontSize: 18, fontWeight: '700', width: 40 },
+        currencyNameText: { color: colors.textSecondary, fontSize: 16, flex: 1 },
+        cancelButton: { marginTop: 20, padding: 16, alignItems: 'center', backgroundColor: colors.checkboxBg, borderRadius: 12 },
+        cancelButtonText: { color: colors.text, fontSize: 16, fontWeight: '600' }
     });
 
     return (
@@ -79,6 +102,16 @@ export const SettingsScreen = ({ navigation }: any) => {
                         </View>
                         <Switch value={isDark} onValueChange={toggleTheme} trackColor={{ false: colors.border, true: colors.primary }} />
                     </View>
+                    <TouchableOpacity style={{ ...dynamicStyles.row, borderBottomWidth: 0 }} onPress={() => setCurrencyModalVisible(true)}>
+                        <View style={dynamicStyles.rowIconContainer}>
+                            <MaterialCommunityIcons name="currency-usd" size={24} color={colors.textSecondary} style={{ marginRight: 12 }} />
+                            <Text style={dynamicStyles.rowLabel}>Currency</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Text style={{ color: colors.primary, fontSize: 16, fontWeight: '600', marginRight: 8 }}>{currency}</Text>
+                            <MaterialCommunityIcons name="chevron-right" size={24} color={colors.textSecondary} />
+                        </View>
+                    </TouchableOpacity>
                 </View>
 
                 <Text style={dynamicStyles.sectionLabel}>Security</Text>
@@ -132,6 +165,34 @@ export const SettingsScreen = ({ navigation }: any) => {
                     </TouchableOpacity>
                 </View>
             </View>
+
+            {/* Currency Selection Modal */}
+            <Modal visible={currencyModalVisible} transparent animationType="slide">
+                <View style={dynamicStyles.modalOverlay}>
+                    <View style={dynamicStyles.modalContent}>
+                        <Text style={dynamicStyles.modalTitle}>Select Currency</Text>
+                        {currencies.map((item) => (
+                            <TouchableOpacity
+                                key={item.symbol}
+                                style={dynamicStyles.currencyOption}
+                                onPress={() => {
+                                    setCurrency(item.symbol);
+                                    setCurrencyModalVisible(false);
+                                }}
+                            >
+                                <Text style={dynamicStyles.currencySymbolText}>{item.symbol}</Text>
+                                <Text style={dynamicStyles.currencyNameText}>{item.name}</Text>
+                                {currency === item.symbol && (
+                                    <MaterialCommunityIcons name="check" size={24} color={colors.primary} />
+                                )}
+                            </TouchableOpacity>
+                        ))}
+                        <TouchableOpacity style={dynamicStyles.cancelButton} onPress={() => setCurrencyModalVisible(false)}>
+                            <Text style={dynamicStyles.cancelButtonText}>Cancel</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </SafeAreaView>
     );
 };

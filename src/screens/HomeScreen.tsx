@@ -9,7 +9,7 @@ import { useTheme } from '../theme/ThemeContext';
 const { width } = Dimensions.get('window');
 
 export const HomeScreen = ({ navigation }: any) => {
-    const { colors, isDark } = useTheme();
+    const { colors, isDark, currency } = useTheme();
     const [budgets, setBudgets] = useState<Budget[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [newBudgetName, setNewBudgetName] = useState('');
@@ -115,13 +115,13 @@ export const HomeScreen = ({ navigation }: any) => {
                     <View style={dynamicStyles.statColumn}>
                         <Text style={dynamicStyles.statLabel}>Income</Text>
                         <Text style={[dynamicStyles.statValue, { color: colors.text }]}>
-                            ${item.income.toFixed(0)}
+                            {currency}{item.income.toFixed(0)}
                         </Text>
                     </View>
                     <View style={dynamicStyles.statColumn}>
                         <Text style={dynamicStyles.statLabel}>Spent</Text>
                         <Text style={[dynamicStyles.statValue, { color: colors.textSecondary }]}>
-                            ${paidExpenses.toFixed(0)}
+                            {currency}{paidExpenses.toFixed(0)}
                         </Text>
                     </View>
                 </View>

@@ -61,27 +61,40 @@ export type ThemeColors = typeof lightColors;
 interface ThemeContextType {
     isDark: boolean;
     colors: ThemeColors;
+    currency: string;
+    setCurrency: (c: string) => void;
     toggleTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
     isDark: true,
     colors: darkColors,
+    currency: '$',
+    setCurrency: () => { },
     toggleTheme: () => { },
 });
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const systemScheme = useColorScheme();
     const [isDark, setIsDark] = useState<boolean>(true); // Default to dark for the "professional dark mode" feel
+    const [currency, setCurrencyState] = useState<string>('$');
 
     useEffect(() => {
         (async () => {
-            const stored = await AsyncStorage.getItem('@theme_pref');
-            if (stored === 'light') setIsDark(false);
-            else if (stored === 'dark') setIsDark(true);
+            const storedTheme = await AsyncStorage.getItem('@theme_pref');
+            if (storedTheme === 'light') setIsDark(false);
+            else if (storedTheme === 'dark') setIsDark(true);
             else setIsDark(systemScheme === 'dark');
+
+            const storedCurrency = await AsyncStorage.getItem('@currency_pref');
+            if (storedCurrency) setCurrencyState(storedCurrency);
         })();
     }, [systemScheme]);
+
+    const setCurrency = async (sym: string) => {
+        setCurrencyState(sym);
+        await AsyncStorage.setItem('@currency_pref', sym);
+    };
 
     const toggleTheme = async () => {
         const nextState = !isDark;
@@ -92,7 +105,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const colors = isDark ? darkColors : lightColors;
 
     return (
-        <ThemeContext.Provider value={{ isDark, colors, toggleTheme }}>
+        <ThemeContext.Provider value={{ isDark, colors, currency, setCurrency, toggleTheme }}>
             {children}
         </ThemeContext.Provider>
     );

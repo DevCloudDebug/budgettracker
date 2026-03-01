@@ -10,11 +10,14 @@ import { BudgetChart } from '../components/BudgetChart';
 
 export const BudgetScreen = ({ route, navigation }: any) => {
     const { budgetId } = route.params;
-    const { colors, isDark } = useTheme();
+    const { colors, isDark, currency } = useTheme();
     const [budget, setBudget] = useState<Budget | null>(null);
 
     const [incomeModalVisible, setIncomeModalVisible] = useState(false);
     const [newIncome, setNewIncome] = useState('');
+
+    const [renameModalVisible, setRenameModalVisible] = useState(false);
+    const [renameBudgetName, setRenameBudgetName] = useState('');
 
     const [expenseModalVisible, setExpenseModalVisible] = useState(false);
     const [expenseName, setExpenseName] = useState('');
@@ -42,6 +45,14 @@ export const BudgetScreen = ({ route, navigation }: any) => {
         await updateBudget(updated);
         setIncomeModalVisible(false);
         setNewIncome('');
+    };
+
+    const renameBudget = async () => {
+        if (!budget || !renameBudgetName.trim()) return;
+        const updated = { ...budget, name: renameBudgetName.trim() };
+        setBudget(updated);
+        await updateBudget(updated);
+        setRenameModalVisible(false);
     };
 
     const addExpense = async () => {
@@ -156,6 +167,9 @@ export const BudgetScreen = ({ route, navigation }: any) => {
 
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <TouchableOpacity onPress={() => { setNewIncome(budget.income.toString()); setIncomeModalVisible(true); }} style={{ marginRight: 16 }}>
+                        <MaterialCommunityIcons name="cash" size={24} color={colors.textSecondary} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => { setRenameBudgetName(budget.name); setRenameModalVisible(true); }} style={{ marginRight: 16 }}>
                         <MaterialCommunityIcons name="pencil-outline" size={24} color={colors.textSecondary} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={handleDelete}>
@@ -173,19 +187,19 @@ export const BudgetScreen = ({ route, navigation }: any) => {
                         <View style={dynamicStyles.statsContainer}>
                             <View style={dynamicStyles.statBox}>
                                 <Text style={dynamicStyles.statLabel}>Income</Text>
-                                <Text style={[dynamicStyles.statValue, { color: colors.chartIncome }]}>${budget.income.toFixed(2)}</Text>
+                                <Text style={[dynamicStyles.statValue, { color: colors.chartIncome }]}>{currency}{budget.income.toFixed(2)}</Text>
                             </View>
                             <View style={dynamicStyles.statBox}>
                                 <Text style={dynamicStyles.statLabel}>Expected Expenses</Text>
-                                <Text style={[dynamicStyles.statValue, { color: colors.text }]}>${totalExpenses.toFixed(2)}</Text>
+                                <Text style={[dynamicStyles.statValue, { color: colors.text }]}>{currency}{totalExpenses.toFixed(2)}</Text>
                             </View>
                             <View style={dynamicStyles.statBox}>
                                 <Text style={dynamicStyles.statLabel}>Money Spent</Text>
-                                <Text style={[dynamicStyles.statValue, { color: colors.chartPaid }]}>${paidExpenses.toFixed(2)}</Text>
+                                <Text style={[dynamicStyles.statValue, { color: colors.chartPaid }]}>{currency}{paidExpenses.toFixed(2)}</Text>
                             </View>
                             <View style={dynamicStyles.statBox}>
                                 <Text style={dynamicStyles.statLabel}>To Be Paid</Text>
-                                <Text style={[dynamicStyles.statValue, { color: colors.chartUnpaid }]}>${Math.max(0, totalExpenses - paidExpenses).toFixed(2)}</Text>
+                                <Text style={[dynamicStyles.statValue, { color: colors.chartUnpaid }]}>{currency}{Math.max(0, totalExpenses - paidExpenses).toFixed(2)}</Text>
                             </View>
                         </View>
                     </View>
@@ -227,6 +241,31 @@ export const BudgetScreen = ({ route, navigation }: any) => {
                                 <Text style={dynamicStyles.buttonText}>Cancel</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={[dynamicStyles.button, dynamicStyles.primaryButton]} onPress={setIncome}>
+                                <Text style={dynamicStyles.buttonTextDark}>Save</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </KeyboardAvoidingView>
+            </Modal>
+
+            {/* Rename Budget Modal */}
+            <Modal visible={renameModalVisible} transparent animationType="fade">
+                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={dynamicStyles.modalOverlay}>
+                    <View style={dynamicStyles.modalContent}>
+                        <Text style={dynamicStyles.modalTitle}>Rename Budget</Text>
+                        <TextInput
+                            style={dynamicStyles.input}
+                            placeholder="Budget Name"
+                            placeholderTextColor={colors.textSecondary}
+                            value={renameBudgetName}
+                            onChangeText={setRenameBudgetName}
+                            autoFocus
+                        />
+                        <View style={dynamicStyles.modalActions}>
+                            <TouchableOpacity style={[dynamicStyles.button, dynamicStyles.cancelButton]} onPress={() => setRenameModalVisible(false)}>
+                                <Text style={dynamicStyles.buttonText}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[dynamicStyles.button, dynamicStyles.primaryButton]} onPress={renameBudget}>
                                 <Text style={dynamicStyles.buttonTextDark}>Save</Text>
                             </TouchableOpacity>
                         </View>
